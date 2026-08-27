@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calgary Transit My Fare - Redesign Demo</title>
+    <style>
+        :root {
+            --ct-red: #DA291C;
+            --ct-dark-red: #A6192E;
+            --bg-gray: #F4F6F8;
+            --card-white: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-sub: #8E8E93;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            background: #FFF;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--ct-red);
+            color: white;
+            padding: 24px 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        .content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* 主頁票卡 */
+        .active-ticket-card {
+            background: linear-gradient(135deg, var(--ct-red), var(--ct-dark-red));
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 16px rgba(218, 41, 28, 0.25);
+        }
+
+        .ticket-status {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .ticket-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--card-white);
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 16px 0 8px;
+        }
+
+        /* 通用清單選項卡片 */
+        .list-card {
+            background: var(--card-white);
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+        }
+
+        .list-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .ticket-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ct-red);
+        }
+
+        /* 標籤元件 */
+        .badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .badge-unused {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        /* 底部導覽列 */
+        .bottom-nav {
+            height: 64px;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #FFF;
+        }
+
+        .nav-item {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .nav-item.active {
+            color: var(--ct-red);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- 1. 主頁面 (Home) -->
+        <div id="home-view" class="view-section active">
+            <div class="header">
+                <h1>Calgary Transit</h1>
+            </div>
+
+            <div class="content">
+                <div class="active-ticket-card">
+                    <span class="ticket-status">Active Pass</span>
+                    <h2 class="ticket-title">Adult Monthly Pass</h2>
+                    <p style="margin: 0; opacity: 0.9; font-size: 14px;">Expires in 12 days</p>
+                </div>
+
+                <button class="action-button" onclick="navigateTo('buy-view', 'nav-home')">
+                    <span>🎟️ Buy Tickets / Passes</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 購票頁面 (Buy Tickets Sub-page) -->
+        <div id="buy-view" class="view-section">
+            <div class="header">
+                <button class="back-btn" onclick="navigateTo('home-view', 'nav-home')">←</button>
+                <h1>Buy Tickets</h1>
+                <span style="width: 20px;"></span>
+            </div>
+
+            <div class="content">
+                <div class="section-title">Single Rides & Day Passes</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Adult Single Ticket</h4>
+                        <p>Valid for 90 minutes</p>
+                    </div>
+                    <div class="ticket-price">$3.70</div>
+                </div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Youth Single Ticket</h4>
+                        <p>Ages 6 - 17</p>
+                    </div>
+                    <div class="ticket-price">$2.50</div>
+                </div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Day Pass</h4>
+                        <p>Unlimited rides for 1 day</p>
+                    </div>
+                    <div class="ticket-price">$11.60</div>
+                </div>
+
+                <div class="section-title">Monthly Passes</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Adult Monthly Pass</h4>
+                        <p>Full month access</p>
+                    </div>
+                    <div class="ticket-price">$115.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 票夾頁面 (Wallet) -->
+        <div id="wallet-view" class="view-section">
+            <div class="header">
+                <h1>My Wallet</h1>
+            </div>
+            <div class="content">
+                <div class="section-title">Active Tickets</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Adult Monthly Pass</h4>
+                        <p>Activated: Aug 1, 2026</p>
+                    </div>
+                    <span class="badge badge-active">Active</span>
+                </div>
+
+                <div class="section-title">Unused Tickets</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Adult Single Ticket</h4>
+                        <p>Purchased: Aug 20, 2026</p>
+                    </div>
+                    <span class="badge badge-unused">Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 說明頁面 (Help) -->
+        <div id="help-view" class="view-section">
+            <div class="header">
+                <h1>Help & Support</h1>
+            </div>
+            <div class="content">
+                <div class="section-title">Frequently Asked Questions</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>How do I activate a ticket?</h4>
+                        <p>Tap your unused ticket in Wallet before boarding.</p>
+                    </div>
+                </div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Transfer rules</h4>
+                        <p>Single tickets are valid for 90 minutes on Bus & CTrain.</p>
+                    </div>
+                </div>
+
+                <div class="section-title">Contact Us</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Calgary Transit Customer Service</h4>
+                        <p>403-262-1000</p>
+                    </div>
+                    <span>📞</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 帳號頁面 (Account) -->
+        <div id="account-view" class="view-section">
+            <div class="header">
+                <h1>Account</h1>
+            </div>
+            <div class="content">
+                <div class="list-card" style="margin-top: 10px;">
+                    <div class="list-info">
+                        <h4>Yi-sheng Kuo</h4>
+                        <p>yisheng@example.com</p>
+                    </div>
+                </div>
+
+                <div class="section-title">Settings</div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Payment Methods</h4>
+                        <p>Visa ending in 4242</p>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>Order History</h4>
+                        <p>View past receipts</p>
+                    </div>
+                    <span>→</span>
+                </div>
+                <div class="list-card">
+                    <div class="list-info">
+                        <h4>App Settings</h4>
+                        <p>Notifications, Language</p>
+                    </div>
+                    <span>→</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部導覽列 -->
+        <div class="bottom-nav">
+            <div id="nav-home" class="nav-item active" onclick="navigateTo('home-view', 'nav-home')">
+                <span>🏠</span>
+                <span>Home</span>
+            </div>
+            <div id="nav-wallet" class="nav-item" onclick="navigateTo('wallet-view', 'nav-wallet')">
+                <span>👛</span>
+                <span>Wallet</span>
+            </div>
+            <div id="nav-help" class="nav-item" onclick="navigateTo('help-view', 'nav-help')">
+                <span>❓</span>
+                <span>Help</span>
+            </div>
+            <div id="nav-account" class="nav-item" onclick="navigateTo('account-view', 'nav-account')">
+                <span>👤</span>
+                <span>Account</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(viewId, navId) {
+            // 切換頁面顯示
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+
+            // 更新底部導覽列 active 狀態
+            if (navId) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.getElementById(navId).classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

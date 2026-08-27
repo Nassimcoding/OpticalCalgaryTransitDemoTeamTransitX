@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calgary Transit My Fare - Redesign Demo</title>
+    <style>
+        :root {
+            --ct-red: #DA291C;
+            --ct-dark: #1E1E1E;
+            --bg-gray: #F4F6F8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-gray);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-mockup {
+            width: 360px;
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            border: 8px solid #222;
+        }
+
+        .header {
+            background: var(--ct-red);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .ticket-card {
+            margin: 16px;
+            padding: 20px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+            text-align: center;
+        }
+
+        .qr-placeholder {
+            width: 160px;
+            height: 160px;
+            background: #eee;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* 動態防偽驗票區塊 */
+        .security-banner {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .live-time {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .ticket-type {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--ct-dark);
+            margin: 8px 0 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-mockup">
+        <div class="header">Calgary Transit - My Fare</div>
+
+        <div class="ticket-card">
+            <div class="ticket-type">ADULT SINGLE TICKET</div>
+            <div style="color: #666; font-size: 0.9rem; margin-bottom: 16px;">Active Ticket</div>
+
+            <div class="qr-placeholder">[ QR Code Scanning ]</div>
+
+            <div class="security-banner">
+                <div id="clock" class="live-time">10:15:30 AM</div>
+                <div style="font-size: 0.85rem; margin-top: 4px;">Aug 26, 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+</body>
+
+</html>

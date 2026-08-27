@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calgary Transit My Fare - Redesign Demo</title>
+    <style>
+        :root {
+            --ct-red: #DA291C;
+            --ct-dark-red: #A6192E;
+            --bg-gray: #F4F6F8;
+            --card-white: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-sub: #8E8E93;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            background: #FFF;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--ct-red);
+            color: white;
+            padding: 24px 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        .content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .active-ticket-card {
+            background: linear-gradient(135deg, var(--ct-red), var(--ct-dark-red));
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 16px rgba(218, 41, 28, 0.25);
+        }
+
+        .ticket-status {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .ticket-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--card-white);
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* 購票頁面專用元件 */
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 16px 0 8px;
+        }
+
+        .ticket-option {
+            background: var(--card-white);
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+        }
+
+        .ticket-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .ticket-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ct-red);
+        }
+
+        .bottom-nav {
+            height: 64px;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #FFF;
+        }
+
+        .nav-item {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--ct-red);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- 主頁面 -->
+        <div id="home-view" class="view-section active">
+            <div class="header">
+                <h1>Calgary Transit</h1>
+            </div>
+
+            <div class="content">
+                <div class="active-ticket-card">
+                    <span class="ticket-status">Active Pass</span>
+                    <h2 class="ticket-title">Adult Monthly Pass</h2>
+                    <p style="margin: 0; opacity: 0.9; font-size: 14px;">Expires in 12 days</p>
+                </div>
+
+                <button class="action-button" onclick="navigateTo('buy-view')">
+                    <span>🎟️ Buy Tickets / Passes</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 購票內頁 -->
+        <div id="buy-view" class="view-section">
+            <div class="header">
+                <button class="back-btn" onclick="navigateTo('home-view')">←</button>
+                <h1>Buy Tickets</h1>
+                <span style="width: 20px;"></span>
+            </div>
+
+            <div class="content">
+                <div class="section-title">Single Rides & Day Passes</div>
+                <div class="ticket-option">
+                    <div class="ticket-info">
+                        <h4>Adult Single Ticket</h4>
+                        <p>Valid for 90 minutes</p>
+                    </div>
+                    <div class="ticket-price">$3.70</div>
+                </div>
+                <div class="ticket-option">
+                    <div class="ticket-info">
+                        <h4>Youth Single Ticket</h4>
+                        <p>Ages 6 - 17</p>
+                    </div>
+                    <div class="ticket-price">$2.50</div>
+                </div>
+                <div class="ticket-option">
+                    <div class="ticket-info">
+                        <h4>Day Pass</h4>
+                        <p>Unlimited rides for 1 day</p>
+                    </div>
+                    <div class="ticket-price">$11.60</div>
+                </div>
+
+                <div class="section-title">Monthly Passes</div>
+                <div class="ticket-option">
+                    <div class="ticket-info">
+                        <h4>Adult Monthly Pass</h4>
+                        <p>Full month access</p>
+                    </div>
+                    <div class="ticket-price">$115.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部導覽列 -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navigateTo('home-view')">Home</div>
+            <div class="nav-item">Wallet</div>
+            <div class="nav-item">Help</div>
+            <div class="nav-item">Account</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(viewId) {
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+    </script>
+
+</body>
+
+</html>
