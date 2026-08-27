@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f8f5" />
+    <meta name="description" content="Calgary Transit mobile trip planner." />
+    <title>Calgary Transit</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="status-time">9:41</div>
+        <div class="header-row">
+          <a class="brand" href="#home" aria-label="Calgary Transit home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Calgary <b>Transit</b></span></a>
+          <div class="header-actions"><button class="header-icon location-icon" id="locationButton" type="button" aria-label="Use current location"><span aria-hidden="true"></span></button><button class="header-icon settings-icon" id="settingsButton" type="button" aria-label="Open settings">⚙</button></div>
+        </div>
+      </header>
+
+      <main>
+        <section class="app-page active-page" id="page-home" data-page="home">
+        <section class="welcome-section">
+          <p class="eyebrow">GOOD MORNING, CALGARY <span>✦</span></p>
+          <h1>Where are you<br /><em>headed?</em></h1>
+          <p class="intro">Get there with less waiting and more knowing.</p>
+        </section>
+
+        <section class="planner-card" id="plan" aria-label="Trip planner">
+          <div class="planner-title"><span class="section-kicker">PLAN A TRIP</span><span class="live-pill"><i></i> Live</span></div>
+          <form id="plannerForm">
+            <div class="field-wrap"><span class="field-marker from-marker" aria-hidden="true"></span><label for="fromInput">From</label><input id="fromInput" type="text" placeholder="Current location" autocomplete="off" /></div>
+            <button class="swap-button" id="swapButton" type="button" aria-label="Swap locations">↕</button>
+            <div class="field-wrap"><span class="field-marker to-marker" aria-hidden="true"></span><label for="toInput">To</label><input id="toInput" type="text" placeholder="Search a stop or place" autocomplete="off" /></div>
+            <button class="primary-button" type="submit">Find a route <span>→</span></button>
+          </form>
+          <p class="form-message" id="plannerMessage" role="status"></p>
+        </section>
+
+        <section class="map-preview" aria-label="Nearby transit map">
+          <div class="map-toolbar"><span><i class="map-live-dot"></i> NEAR YOU</span><button type="button" id="mapLocation">◎</button></div>
+          <div class="osm-map" id="osmMap" aria-label="OpenStreetMap showing nearby Calgary Transit stops"></div>
+          <div class="map-callout"><span class="station-dot"></span><div><strong>7 Street SW</strong><small>3 routes nearby</small></div><button type="button" data-stop="7 Street SW" aria-label="View 7 Street SW details">›</button></div>
+        </section>
+
+        <section class="mobile-section home-departure" id="departures">
+          <div class="section-heading"><div><span class="section-kicker">NEARBY NOW</span><h2>Next departure</h2></div><button class="text-button" id="refreshDepartures" type="button" aria-label="Refresh departure times">↻</button></div>
+          <div class="nearby-card"><div class="nearby-header"><span><strong id="nearbyStopName">7 Street SW</strong><small>Downtown Calgary</small></span><button class="bookmark-button" type="button" aria-label="Save stop" aria-pressed="false">♡</button></div><div id="nearbyDepartures"></div><button class="secondary-button full-width" type="button" data-stop="7 Street SW">View stop <span>→</span></button></div>
+        </section>
+        <section class="mobile-section results-section" id="plannerResults" hidden><div class="section-heading"><div><span class="section-kicker">YOUR OPTIONS</span><h2>Best ways to go</h2></div><button class="text-button" id="editPlan" type="button">Edit</button></div><div class="trip-results" id="tripResults"></div></section>
+        </section>
+
+        <section class="app-page" id="page-plan" data-page="plan">
+          <div class="page-heading"><span class="section-kicker">TRIP PLANNER</span><h1>Plan your <em>journey.</em></h1><p>Choose where you're going and we'll find the best way there.</p></div>
+          <section class="planner-card page-card" aria-label="Trip planner">
+            <div class="planner-title"><span class="section-kicker">PLAN A TRIP</span><span class="live-pill"><i></i> Live</span></div>
+            <form id="plannerFormPage">
+              <div class="field-wrap"><span class="field-marker from-marker" aria-hidden="true"></span><label for="fromInputPage">From</label><input id="fromInputPage" type="text" placeholder="Current location" /></div>
+              <button class="swap-button" id="swapButtonPage" type="button" aria-label="Swap locations">↕</button>
+              <div class="field-wrap"><span class="field-marker to-marker" aria-hidden="true"></span><label for="toInputPage">To</label><input id="toInputPage" type="text" placeholder="Search a stop or place" /></div>
+              <button class="primary-button" type="submit">Find a route <span>→</span></button>
+            </form><p class="form-message" id="plannerMessagePage" role="status"></p>
+          </section>
+          <section class="mobile-section results-section" id="plannerResultsPage" hidden><div class="section-heading"><div><span class="section-kicker">YOUR OPTIONS</span><h2>Best ways to go</h2></div></div><div class="trip-results" id="tripResultsPage"></div></section>
+        </section>
+
+        <section class="app-page" id="page-departures" data-page="departures">
+          <div class="page-heading"><span class="section-kicker">LIVE NETWORK</span><h1>Next <em>departures.</em></h1><p>Real-time departures from stops near you.</p></div>
+          <section class="mobile-section page-section"><div class="osm-map departures-map" id="departuresMap" aria-label="OpenStreetMap showing Calgary Transit stops"></div><div class="search-field"><span>⌕</span><input id="stopSearch" type="search" placeholder="Search a stop" aria-label="Search a stop" /></div><div class="stop-list" id="stopList"></div></section>
+        </section>
+
+        <section class="app-page" id="page-routes" data-page="routes">
+          <div class="page-heading"><span class="section-kicker">EXPLORE THE NETWORK</span><h1>Routes & <em>stops.</em></h1><p>Find a line, station or stop anywhere in Calgary.</p></div>
+          <section class="mobile-section page-section"><div class="search-field"><span>⌕</span><input id="routeSearchPage" type="search" placeholder="Search route or stop" aria-label="Search route or stop" /></div><div class="filter-row" role="group" aria-label="Route filters"><button class="filter-button selected" data-page-filter="all" type="button">All</button><button class="filter-button" data-page-filter="c-train" type="button">CTrain</button><button class="filter-button" data-page-filter="bus" type="button">Bus</button></div><div class="route-grid" id="routeGridPage"></div><p class="empty-state" id="routeEmptyPage" hidden>No routes found.</p></section>
+        </section>
+
+        <section class="app-page" id="page-settings" data-page="settings">
+          <div class="page-heading"><span class="section-kicker">PERSONALISE YOUR RIDE</span><h1>App <em>settings.</em></h1><p>Make Calgary Transit work better for you.</p></div>
+          <section class="settings-group"><span class="settings-label">APPEARANCE</span><div class="settings-card"><div class="setting-row"><span><strong>Theme</strong><small>Choose how the app looks</small></span><div class="segmented" role="group" aria-label="Theme"><button class="theme-choice selected" data-theme="light" type="button">Light</button><button class="theme-choice" data-theme="dark" type="button">Dark</button><button class="theme-choice" data-theme="system" type="button">Auto</button></div></div></div></section>
+          <section class="settings-group"><span class="settings-label">ACCESSIBILITY</span><div class="settings-card"><label class="setting-row toggle-row"><span><strong>Larger text</strong><small>Increase text size across the app</small></span><input class="toggle-input" id="largeTextToggle" type="checkbox" /><span class="toggle" aria-hidden="true"></span></label><label class="setting-row toggle-row"><span><strong>High contrast</strong><small>Make content easier to distinguish</small></span><input class="toggle-input" id="contrastToggle" type="checkbox" /><span class="toggle" aria-hidden="true"></span></label><label class="setting-row toggle-row"><span><strong>Reduce motion</strong><small>Use fewer transitions and animations</small></span><input class="toggle-input" id="motionToggle" type="checkbox" /><span class="toggle" aria-hidden="true"></span></label></div></section>
+          <section class="settings-group"><span class="settings-label">TRAVEL PREFERENCES</span><div class="settings-card"><label class="setting-row toggle-row"><span><strong>Prefer accessible routes</strong><small>Prioritise accessible stations</small></span><input class="toggle-input" id="accessibleToggle" type="checkbox" /><span class="toggle" aria-hidden="true"></span></label><label class="setting-row toggle-row"><span><strong>Fewer transfers</strong><small>Prefer simpler journeys</small></span><input class="toggle-input" id="transferToggle" type="checkbox" /><span class="toggle" aria-hidden="true"></span></label></div></section>
+          <p class="settings-note">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> · Calgary Transit demo v1.0</p>
+        </section>
+
+        <section class="app-page" id="page-saved" data-page="saved">
+          <div class="page-heading"><span class="section-kicker">YOUR PLACES</span><h1>Saved <em>stops.</em></h1><p>Keep your everyday trips close at hand.</p></div>
+          <section class="mobile-section page-section"><div class="saved-empty"><span>♡</span><h2>Your saved stops</h2><p>Save a stop from its departure card and it will appear here.</p><button class="primary-button" type="button" data-page-target="departures">Find a stop <span>→</span></button></div></section>
+        </section>
+
+        <section class="app-page" id="page-status" data-page="status">
+          <div class="page-heading"><span class="section-kicker">KEEPING YOU MOVING</span><h1>Service <em>status.</em></h1><p>Know before you go.</p></div>
+          <section class="status-card page-status-card"><div class="status-card-heading"><span class="section-kicker">NETWORK STATUS</span><span class="status-ok"><i></i> Mostly normal</span></div><h2>Moving normally</h2><p>One minor platform change near Downtown.</p></section>
+          <section class="mobile-section page-section alerts-panel"><div class="section-heading"><div><span class="section-kicker">LATEST UPDATES</span><h2>Service alerts</h2></div><span class="alert-count" id="alertCount">2 active</span></div><div class="alerts-list" id="alertsList"></div></section>
+        </section>
+      </main>
+
+      <nav class="bottom-tabbar" aria-label="App navigation"><button class="tab active" data-page-target="home" type="button"><span>⌂</span><small>Home</small></button><button class="tab" data-page-target="plan" type="button"><span>⌕</span><small>Plan</small></button><button class="tab" data-page-target="departures" type="button"><span>◷</span><small>Departures</small></button><button class="tab" data-page-target="status" type="button"><span>!</span><small>Status</small><i class="tab-alert"></i></button></nav>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop" hidden><section class="modal" role="dialog" aria-modal="true"><button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button><div id="modalContent"></div></section></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
